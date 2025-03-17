@@ -198,10 +198,12 @@ export function RespiracaoConscienteClient() {
 
   // Função para iniciar o exercício de respiração
   const startBreathing = () => {
+    if (!selectedTechnique) return;
+    
     setIsBreathingActive(true)
     setBreathingPhase("inhale")
     setCurrentCycle(1)
-    setSecondsLeft(selectedTechnique?.inhaleTime || 4)
+    setSecondsLeft(selectedTechnique.inhaleTime || 4)
   }
 
   // Função para pausar o exercício de respiração
