@@ -2,6 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { CalendarIcon, Clock, ArrowLeft, Tag, Share2, Bookmark } from "lucide-react"
+import { Metadata } from "next"
 
 // Dados simulados de posts do blog
 const blogPosts = [
@@ -94,15 +95,20 @@ const blogPosts = [
   },
 ]
 
-// @ts-ignore - Ignorando verificações de tipo para resolver o problema na Vercel
+// Definição de tipos
+type BlogPostParams = {
+  params: {
+    slug: string;
+  };
+}
+
 export function generateStaticParams() {
   return blogPosts.map((post) => ({
     slug: post.slug,
   }))
 }
 
-// @ts-ignore - Ignorando verificações de tipo para resolver o problema na Vercel
-export async function generateMetadata({ params }: any) {
+export async function generateMetadata({ params }: BlogPostParams): Promise<Metadata> {
   const post = blogPosts.find((post) => post.slug === params.slug)
 
   if (!post) {
@@ -118,8 +124,7 @@ export async function generateMetadata({ params }: any) {
   }
 }
 
-// @ts-ignore - Ignorando verificações de tipo para resolver o problema na Vercel
-export default async function BlogPostPage({ params }: any) {
+export default function BlogPostPage({ params }: BlogPostParams) {
   const post = blogPosts.find((post) => post.slug === params.slug)
 
   if (!post) {
