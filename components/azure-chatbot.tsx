@@ -31,11 +31,6 @@ export function AzureChatbot({
   const [error, setError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Configurações da API Azure
-  const endpoint =
-    "https://pppi-azure-ai-service.openai.azure.com/openai/deployments/gpt-4o-mini-triagem/chat/completions?api-version=2024-10-21"
-  const apiKey = "98ezVjOLZ0qbmeqGB0z2SK8NHHONeEsRGDk5wyCePPJcqVFFdzMIJQQJ99BBACYeBjFXJ3w3AAAAACOGAHF2"
-
   useEffect(() => {
     scrollToBottom()
   }, [messages])
@@ -59,11 +54,10 @@ export function AzureChatbot({
     setError(null)
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch('/api/chat', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "api-key": apiKey,
         },
         body: JSON.stringify({
           messages: [...messages, userMessage].map((msg) => ({
