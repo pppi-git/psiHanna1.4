@@ -41,25 +41,35 @@ interface ActionResponse {
  * Salva os dados no Supabase
  */
 export async function submitContactForm(values: ContactFormValues): Promise<ActionResponse> {
+  console.log("[SERVER] Iniciando submitContactForm com valores:", values)
+  
   try {
     // Validar dados
+    console.log("[SERVER] Validando dados com Zod")
     const validatedData = contactFormSchema.parse(values)
     
     // Obter cliente Supabase
+    console.log("[SERVER] Criando cliente Supabase")
     const supabase = await createClient()
+    console.log("[SERVER] Cliente Supabase criado com sucesso")
 
-    // Inserir dados na tabela de contatos
-    const { error } = await supabase.from('contacts').insert({
+    // Preparar dados para inserção
+    const contactData = {
       name: validatedData.name,
       email: validatedData.email,
       phone: validatedData.phone || '',
       subject: validatedData.subject,
       message: validatedData.message,
       preferred_contact: validatedData.preferredContact
-    })
+    }
+    console.log("[SERVER] Dados preparados para inserção:", contactData)
+
+    // Inserir dados na tabela de contatos
+    console.log("[SERVER] Inserindo dados na tabela contacts")
+    const { error } = await supabase.from('contacts').insert(contactData)
 
     if (error) {
-      console.error("Erro ao salvar contato no Supabase:", error)
+      console.error("[SERVER] Erro ao salvar contato no Supabase:", error)
       
       // Verificar se é um erro de permissão
       if (error.code === '42501' || error.message.includes('permission denied')) {
@@ -72,6 +82,8 @@ export async function submitContactForm(values: ContactFormValues): Promise<Acti
       
       throw new Error(error.message)
     }
+    
+    console.log("[SERVER] Dados inseridos com sucesso!")
 
     // Em uma aplicação real, você também enviaria um email de notificação aqui
 
@@ -80,7 +92,7 @@ export async function submitContactForm(values: ContactFormValues): Promise<Acti
       message: "Mensagem enviada com sucesso!" 
     }
   } catch (error) {
-    console.error("Erro ao enviar formulário de contato:", error)
+    console.error("[SERVER] Erro ao enviar formulário de contato:", error)
     
     const errorMessage = error instanceof Error ? error.message : "Erro desconhecido"
     

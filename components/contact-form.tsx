@@ -50,13 +50,17 @@ export function ContactForm() {
   // Função para lidar com o envio do formulário
   async function onSubmit(data: FormValues) {
     setIsSubmitting(true)
+    console.log("Enviando dados do formulário:", data)
 
     try {
       // Enviar dados para o servidor usando a função de ação do servidor
+      console.log("Chamando submitContactForm com dados:", data)
       const result = await submitContactForm(data)
+      console.log("Resposta do servidor:", result)
 
       if (result.success) {
         // Mostrar mensagem de sucesso
+        console.log("Formulário enviado com sucesso!")
         toast.success(result.message, {
           duration: 5000,
         })
@@ -65,16 +69,36 @@ export function ContactForm() {
         form.reset()
       } else {
         // Mostrar mensagem de erro
-        toast.error(result.message, {
+        console.error("Erro retornado pelo servidor:", result.error || result.message)
+        
+        let mensagemErro = "Erro ao enviar mensagem. Por favor, tente novamente.";
+        
+        // Personalizar mensagem de erro com base no tipo de erro
+        if (result.error?.includes("permission denied")) {
+          mensagemErro = "Você não tem permissão para enviar mensagens. Verifique sua conexão.";
+        } else if (result.error?.includes("not found")) {
+          mensagemErro = "O serviço de mensagens está temporariamente indisponível. Tente novamente mais tarde.";
+        } else if (result.error) {
+          mensagemErro = `Erro ao enviar mensagem: ${result.error}`;
+        }
+        
+        toast.error(mensagemErro, {
           duration: 5000,
         })
       }
     } catch (error) {
       // Mostrar mensagem de erro
-      toast.error("Erro ao enviar mensagem. Por favor, tente novamente.", {
+      console.error("Erro ao enviar formulário:", error)
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Erro desconhecido ao processar formulário"
+      
+      console.error("Detalhes do erro:", errorMessage)
+      
+      toast.error("Erro ao enviar mensagem. Por favor, tente novamente ou entre em contato por outro meio.", {
         duration: 5000,
       })
-      console.error("Erro ao enviar formulário:", error)
     } finally {
       setIsSubmitting(false)
     }
