@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { toast } from "sonner"
 import { ArrowRight, Loader2 } from "lucide-react"
+import { submitContactForm } from "@/app/actions"
 
 // Esquema de validação
 const formSchema = z.object({
@@ -21,6 +22,9 @@ const formSchema = z.object({
     required_error: "Por favor selecione um assunto",
   }),
   message: z.string().min(10, { message: "A mensagem deve ter pelo menos 10 caracteres" }),
+  preferredContact: z.enum(["email", "phone", "whatsapp"], {
+    required_error: "Por favor, selecione uma forma de contacto",
+  }),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -37,6 +41,7 @@ export function ContactForm() {
       phone: "",
       subject: "duvida",
       message: "",
+      preferredContact: "email",
     },
   })
 
@@ -47,19 +52,23 @@ export function ContactForm() {
     setIsSubmitting(true)
 
     try {
-      // Simular um atraso de rede
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // Enviar dados para o servidor usando a função de ação do servidor
+      const result = await submitContactForm(data)
 
-      // Aqui você adicionaria a lógica real de envio para seu backend
-      console.log("Dados do formulário:", data)
+      if (result.success) {
+        // Mostrar mensagem de sucesso
+        toast.success(result.message, {
+          duration: 5000,
+        })
 
-      // Mostrar mensagem de sucesso
-      toast.success("Mensagem enviada com sucesso! Entraremos em contato em breve.", {
-        duration: 5000,
-      })
-
-      // Resetar o formulário
-      form.reset()
+        // Resetar o formulário
+        form.reset()
+      } else {
+        // Mostrar mensagem de erro
+        toast.error(result.message, {
+          duration: 5000,
+        })
+      }
     } catch (error) {
       // Mostrar mensagem de erro
       toast.error("Erro ao enviar mensagem. Por favor, tente novamente.", {
@@ -187,6 +196,44 @@ export function ContactForm() {
                 </FormItem>
               )}
             />
+            
+            <FormField
+              control={form.control}
+              name="preferredContact"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Forma de contacto preferida</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="email" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Email</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="phone" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Telefone</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="whatsapp" />
+                        </FormControl>
+                        <FormLabel className="font-normal">WhatsApp</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"

@@ -83,6 +83,33 @@ npm start
 - **Ferramentas Interativas**: Os dados das ferramentas são salvos localmente (localStorage) e, quando o usuário está autenticado, também são sincronizados com o Supabase
 - **Autenticação**: Preparado para autenticação de usuários (desativada por padrão, pode ser ativada no middleware)
 
+## Configuração do Supabase
+
+Para configurar o banco de dados no Supabase, siga estas etapas:
+
+1. Acesse o painel do Supabase (https://app.supabase.com)
+2. Selecione seu projeto
+3. Navegue até "SQL Editor" no menu lateral
+4. Crie uma nova consulta
+5. Execute os scripts SQL na seguinte ordem:
+
+   a. Primeiro, execute o script para criar as tabelas:
+   ```sql
+   -- Copie o conteúdo do arquivo supabase/setup_simple.sql
+   ```
+
+   b. Em seguida, execute o script para criar as políticas:
+   ```sql
+   -- Copie o conteúdo do arquivo supabase/setup_policies.sql
+   ```
+
+   c. Se você não estiver usando autenticação e quiser permitir acesso anônimo aos dados das ferramentas:
+   ```sql
+   -- Copie o conteúdo do arquivo supabase/setup_anon_policy.sql
+   ```
+
+Nota: Se encontrar erros com a sintaxe `IF NOT EXISTS` para políticas, use os scripts separados que criamos.
+
 ## Licença
 
 Todos os direitos reservados. 

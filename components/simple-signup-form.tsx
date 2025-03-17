@@ -8,18 +8,22 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
+import { toast } from "sonner"
+import { submitProgramSignup } from "@/app/actions"
 
 export function SimpleSignupForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
+    modality: "presencial", // valor padrão
     message: "",
   })
   const [success, setSuccess] = useState(false)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -28,11 +32,28 @@ export function SimpleSignupForm() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simular envio
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      // Enviar dados para o servidor usando a função de ação do servidor
+      const result = await submitProgramSignup(formData)
 
-    setSuccess(true)
-    setIsSubmitting(false)
+      if (result.success) {
+        setSuccess(true)
+        toast.success(result.message, {
+          duration: 5000,
+        })
+      } else {
+        toast.error(result.message, {
+          duration: 5000,
+        })
+      }
+    } catch (error) {
+      toast.error("Erro ao processar inscrição. Por favor, tente novamente.", {
+        duration: 5000,
+      })
+      console.error("Erro ao processar inscrição:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (success) {
@@ -50,9 +71,11 @@ export function SimpleSignupForm() {
             onClick={() => {
               setSuccess(false)
               setFormData({
-                name: "",
+                firstName: "",
+                lastName: "",
                 email: "",
                 phone: "",
+                modality: "presencial",
                 message: "",
               })
             }}
@@ -69,13 +92,25 @@ export function SimpleSignupForm() {
     <Card className="p-6 border shadow-sm">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name">Nome completo</Label>
+          <Label htmlFor="firstName">Nome</Label>
           <Input
-            id="name"
-            name="name"
-            value={formData.name}
+            id="firstName"
+            name="firstName"
+            value={formData.firstName}
             onChange={handleChange}
-            placeholder="Seu nome completo"
+            placeholder="Seu nome"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="lastName">Sobrenome</Label>
+          <Input
+            id="lastName"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            placeholder="Seu sobrenome"
             required
           />
         </div>
@@ -103,6 +138,21 @@ export function SimpleSignupForm() {
             placeholder="Seu telefone"
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="modality">Modalidade</Label>
+          <select
+            id="modality"
+            name="modality"
+            value={formData.modality}
+            onChange={handleChange}
+            className="w-full"
+            required
+          >
+            <option value="presencial">Presencial</option>
+            <option value="online">Online</option>
+          </select>
         </div>
 
         <div className="space-y-2">
