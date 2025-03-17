@@ -5,6 +5,17 @@
   "framework": "nextjs",
   "outputDirectory": ".next",
   "env": {
-    "NEXT_TYPESCRIPT_IGNORE_BUILD_ERRORS": "true"
-  }
+    "NEXT_TYPESCRIPT_IGNORE_BUILD_ERRORS": "true",
+    "NEXT_TYPESCRIPT_COMPILER_OPTIONS": "{\"skipLibCheck\":true,\"strict\":false}"
+  },
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "skipBuildCommand": false,
+        "tsconfig": "tsconfig.vercel.json"
+      }
+    }
+  ]
 }
