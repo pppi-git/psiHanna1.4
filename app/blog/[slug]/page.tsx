@@ -193,7 +193,7 @@ export function generateStaticParams() {
   }))
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: { slug: string } }) {
   const post = blogPosts.find((post) => post.slug === params.slug)
 
   if (!post) {
@@ -209,7 +209,7 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   }
 }
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   const post = blogPosts.find((post) => post.slug === params.slug)
 
   if (!post) {
