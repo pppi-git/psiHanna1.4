@@ -1,5 +1,4 @@
 import { Brain, Heart, FileText, Target, Clock } from "lucide-react"
-import { GuidedBreathing } from "@/components/calm-inspired/guided-breathing"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -101,7 +100,11 @@ export function PublicToolsSection() {
             A respiração consciente é uma das formas mais eficazes de acalmar o sistema nervoso e reduzir a ansiedade.
           </p>
           <div className="flex justify-center mb-4">
-            <GuidedBreathing size="sm" />
+            <div className="p-4 rounded-lg bg-primary/10 text-center">
+              <p className="text-sm text-muted-foreground">
+                Experimente técnicas de respiração para reduzir o stress e a ansiedade.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

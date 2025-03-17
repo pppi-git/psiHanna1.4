@@ -18,7 +18,6 @@ import { motion } from "framer-motion"
 import { useInView } from "react-intersection-observer"
 import { FeatureCard } from "@/components/calm-inspired/feature-card"
 import { TestimonialCarousel } from "@/components/calm-inspired/testimonial-carousel"
-import { GuidedBreathing } from "@/components/calm-inspired/guided-breathing"
 import { ProgressJourney } from "@/components/calm-inspired/progress-journey"
 import { BenefitsGrid } from "@/components/calm-inspired/benefits-grid"
 import { InteractiveQuote } from "@/components/calm-inspired/interactive-quote"
@@ -197,7 +196,11 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="mt-16"
             >
-              <GuidedBreathing size="lg" />
+              <div className="p-8 rounded-lg bg-white/50 backdrop-blur-sm shadow-sm">
+                <p className="text-center text-muted-foreground">
+                  Experimente técnicas de respiração para reduzir o stress e a ansiedade.
+                </p>
+              </div>
             </motion.div>
           </div>
         </div>
