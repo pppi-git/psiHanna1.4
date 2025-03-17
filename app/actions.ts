@@ -1,6 +1,7 @@
 "use server"
 
 import { z } from "zod"
+import { createClient } from "@/lib/supabase/server"
 
 // Schema for contact form validation
 export const contactFormSchema = z.object({
@@ -22,7 +23,7 @@ export const programSignupSchema = z.object({
   lastName: z.string().min(2, { message: "O sobrenome deve ter pelo menos 2 caracteres" }),
   email: z.string().email({ message: "Email inválido" }),
   phone: z.string().min(9, { message: "Por favor, forneça um número de telefone válido" }),
-  modalidade: z.string().min(1, { message: "Por favor, selecione uma modalidade" }),
+  modality: z.string().min(1, { message: "Por favor, selecione uma modalidade" }),
   message: z.string().optional(),
 })
 
@@ -30,16 +31,25 @@ export type ProgramSignupValues = z.infer<typeof programSignupSchema>
 
 export async function submitContactForm(values: ContactFormValues) {
   try {
-    // Em uma aplicação real, você:
-    // 1. Armazenaria os dados do formulário em um banco de dados
-    // 2. Enviaria uma notificação por email
-    // 3. Possivelmente integraria com um sistema CRM
+    // Obter cliente Supabase
+    const supabase = await createClient()
 
-    // Simular um atraso de processamento
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // Inserir dados na tabela de contatos
+    const { error } = await supabase.from('contacts').insert({
+      name: values.name,
+      email: values.email,
+      phone: values.phone || '',
+      subject: values.subject,
+      message: values.message,
+      preferred_contact: values.preferredContact
+    })
 
-    // Para demonstração, apenas logamos os dados do formulário
-    console.log("Formulário de contato enviado:", values)
+    if (error) {
+      console.error("Erro ao salvar contato no Supabase:", error)
+      throw new Error(error.message)
+    }
+
+    // Em uma aplicação real, você também enviaria um email de notificação aqui
 
     return { success: true, message: "Mensagem enviada com sucesso!" }
   } catch (error) {
@@ -51,37 +61,28 @@ export async function submitContactForm(values: ContactFormValues) {
   }
 }
 
-// Esquema para validação do formulário de inscrição no programa
-const ProgramSignupSchema = z.object({
-  name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres" }),
-  email: z.string().email({ message: "Email inválido" }),
-  phone: z.string().min(9, { message: "Por favor, forneça um número de telefone válido" }),
-  modality: z.enum(["presencial", "online"], {
-    required_error: "Por favor, selecione uma modalidade",
-  }),
-  message: z.string().optional(),
-})
-
-export async function submitProgramSignup(formData: unknown) {
+export async function submitProgramSignup(values: ProgramSignupValues) {
   try {
-    // Validar os dados do formulário
-    const validatedFields = ProgramSignupSchema.safeParse(formData)
+    // Obter cliente Supabase
+    const supabase = await createClient()
 
-    if (!validatedFields.success) {
-      return {
-        success: false,
-        message: "Dados de formulário inválidos",
-        errors: validatedFields.error.flatten().fieldErrors,
-      }
+    // Inserir dados na tabela de inscrições no programa
+    const { error } = await supabase.from('program_signups').insert({
+      first_name: values.firstName,
+      last_name: values.lastName,
+      email: values.email,
+      phone: values.phone,
+      modality: values.modality,
+      message: values.message || ''
+    })
+
+    if (error) {
+      console.error("Erro ao salvar inscrição no Supabase:", error)
+      throw new Error(error.message)
     }
 
-    // Aqui você implementaria a lógica para salvar os dados
-    // Por exemplo, enviar para um banco de dados ou API
+    // Em uma aplicação real, você também enviaria um email de notificação aqui
 
-    // Simulando um atraso de processamento
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Retornar sucesso
     return {
       success: true,
       message: "Inscrição enviada com sucesso!",
