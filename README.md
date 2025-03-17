@@ -113,3 +113,59 @@ Nota: Se encontrar erros com a sintaxe `IF NOT EXISTS` para políticas, use os s
 ## Licença
 
 Todos os direitos reservados. 
+
+## Testes
+
+O projeto inclui testes de integração usando Playwright para verificar o funcionamento dos formulários de contato e inscrição, bem como a integração com o Supabase.
+
+### Pré-requisitos para Testes
+
+- Node.js instalado
+- Projeto configurado com as dependências instaladas
+
+### Executando os Testes
+
+Para instalar o Playwright e suas dependências:
+
+```bash
+npm install -D @playwright/test --legacy-peer-deps
+npx playwright install --with-deps chromium
+```
+
+Para executar todos os testes:
+
+```bash
+npm test
+```
+
+Para executar testes específicos:
+
+```bash
+# Testes do formulário de contato
+npm run test:contact
+
+# Testes do formulário de inscrição no programa
+npm run test:program
+
+# Testes de integração com Supabase
+npm run test:integration
+
+# Testes de tratamento de erros
+npm run test:errors
+```
+
+Para executar os testes com interface gráfica:
+
+```bash
+npm run test:ui
+```
+
+Alternativamente, você pode usar o script de execução de testes:
+
+```bash
+./tests/run-tests.sh
+```
+
+### Integração Contínua
+
+O projeto está configurado com GitHub Actions para executar os testes automaticamente em cada push para a branch main e em pull requests. Os resultados dos testes são disponibilizados como artefatos no GitHub Actions. 
