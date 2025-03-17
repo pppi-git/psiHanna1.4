@@ -53,6 +53,61 @@ CREATE POLICY IF NOT EXISTS "Permitir leitura para usuários autenticados"
   ON public.program_signups FOR SELECT 
   USING (auth.role() = 'authenticated');
 
+-- Tabela de inscrições beta
+CREATE TABLE IF NOT EXISTS public.beta_signups (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Políticas para a tabela de inscrições beta
+ALTER TABLE public.beta_signups ENABLE ROW LEVEL SECURITY;
+
+-- Permitir inserções anônimas
+CREATE POLICY IF NOT EXISTS "Permitir inserções anônimas" 
+  ON public.beta_signups FOR INSERT 
+  WITH CHECK (true);
+
+-- Permitir leitura apenas para usuários autenticados
+CREATE POLICY IF NOT EXISTS "Permitir leitura para usuários autenticados" 
+  ON public.beta_signups FOR SELECT 
+  USING (auth.role() = 'authenticated');
+
+-- Função para verificar e criar a tabela beta_signups se não existir
+CREATE OR REPLACE FUNCTION check_and_create_beta_signups_table()
+RETURNS BOOLEAN AS $$
+BEGIN
+  -- Verificar se a tabela já existe
+  IF NOT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'beta_signups') THEN
+    -- Criar a tabela de inscrições beta
+    CREATE TABLE public.beta_signups (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+    );
+
+    -- Configurar RLS (Row Level Security)
+    ALTER TABLE public.beta_signups ENABLE ROW LEVEL SECURITY;
+
+    -- Criar política para permitir inserções anônimas
+    CREATE POLICY "Permitir inserções anônimas" ON public.beta_signups
+      FOR INSERT WITH CHECK (true);
+
+    -- Criar política para permitir leitura apenas para usuários autenticados
+    CREATE POLICY "Permitir leitura para usuários autenticados" ON public.beta_signups
+      FOR SELECT USING (auth.role() = 'authenticated');
+      
+    RETURN TRUE;
+  ELSE
+    RETURN TRUE;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Tabela de dados das ferramentas
 CREATE TABLE IF NOT EXISTS public.tools_data (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
