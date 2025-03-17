@@ -1,11 +1,17 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+/**
+ * Middleware para gerenciar autenticação e sessão do Supabase
+ * Atualiza tokens de autenticação e gerencia cookies
+ */
+export async function middleware(request: NextRequest): Promise<NextResponse> {
+  // Criar resposta inicial
   let supabaseResponse = NextResponse.next({
     request,
   })
 
+  // Inicializar cliente Supabase
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -15,10 +21,17 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          // Primeiro, definir cookies na solicitação
+          cookiesToSet.forEach(({ name, value }) => 
+            request.cookies.set(name, value)
+          )
+          
+          // Criar nova resposta com a solicitação atualizada
           supabaseResponse = NextResponse.next({
             request,
           })
+          
+          // Definir cookies na resposta
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
@@ -27,28 +40,40 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Não execute código entre createServerClient e
+  // IMPORTANTE: Não execute código entre createServerClient e
   // supabase.auth.getUser(). Um simples erro pode tornar muito difícil depurar
   // problemas com usuários sendo desconectados aleatoriamente.
 
-  // IMPORTANTE: NÃO REMOVA auth.getUser()
+  // Obter informações do usuário atual
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser()
+
+  // Registrar erros de autenticação, mas não interromper o fluxo
+  if (authError) {
+    console.error('Erro de autenticação no middleware:', authError)
+  }
 
   // Neste projeto, não vamos redirecionar para login, pois é um site público
   // com algumas áreas protegidas. Se você quiser adicionar autenticação mais tarde,
   // você pode descomentar o código abaixo.
 
   /*
+  // Verificar se o usuário está autenticado para rotas protegidas
   if (
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
+    !request.nextUrl.pathname.startsWith('/auth') &&
+    !isPublicRoute(request.nextUrl.pathname)
   ) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+    // Redirecionar para a página de login
+    const redirectUrl = new URL('/login', request.url)
+    
+    // Adicionar URL de retorno como parâmetro de consulta
+    redirectUrl.searchParams.set('returnUrl', request.nextUrl.pathname)
+    
+    return NextResponse.redirect(redirectUrl)
   }
   */
 
@@ -56,6 +81,10 @@ export async function middleware(request: NextRequest) {
   return supabaseResponse
 }
 
+/**
+ * Configuração do matcher para o middleware
+ * Define quais rotas serão processadas pelo middleware
+ */
 export const config = {
   matcher: [
     /*
@@ -63,7 +92,7 @@ export const config = {
      * - _next/static (arquivos estáticos)
      * - _next/image (arquivos de otimização de imagem)
      * - favicon.ico (arquivo de favicon)
-     * Sinta-se à vontade para modificar este padrão para incluir mais caminhos.
+     * - arquivos de imagem (svg, png, jpg, jpeg, gif, webp)
      */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],

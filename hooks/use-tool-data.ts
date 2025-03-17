@@ -1,60 +1,102 @@
-import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useState, useEffect, useCallback } from 'react'
+import { z } from 'zod'
+
+// Definir schema para validação de dados
+const ToolDataSchema = z.record(z.any())
+
+// Definir tipos para os dados da ferramenta
+interface ToolData {
+  [key: string]: unknown
+}
 
 interface UseToolDataProps {
   toolType: string
-  initialData?: any
+  initialData?: ToolData
 }
 
-export function useToolData({ toolType, initialData }: UseToolDataProps) {
-  const [data, setData] = useState<any>(initialData || null)
+interface UseToolDataReturn {
+  data: ToolData | null
+  setData: (data: ToolData) => void
+  saveData: (newData: ToolData) => Promise<{ success: boolean; error?: unknown }>
+  isLoading: boolean
+  isSaving: boolean
+  error: string | null
+  isLocal: boolean
+}
+
+/**
+ * Hook para gerenciar dados de ferramentas interativas
+ * Suporta armazenamento local e sincronização com o servidor quando disponível
+ */
+export function useToolData({ toolType, initialData }: UseToolDataProps): UseToolDataReturn {
+  const [data, setData] = useState<ToolData | null>(initialData || null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [isLocal, setIsLocal] = useState<boolean>(true)
 
-  // Carregar dados do localStorage ao inicializar
-  useEffect(() => {
-    const loadLocalData = () => {
-      try {
-        const localData = localStorage.getItem(`tool_${toolType}`)
-        if (localData) {
-          setData(JSON.parse(localData))
-        }
-      } catch (err) {
-        console.error('Erro ao carregar dados locais:', err)
+  // Carregar dados do localStorage
+  const loadLocalData = useCallback(() => {
+    try {
+      const localStorageKey = `tool_${toolType}`
+      const localData = localStorage.getItem(localStorageKey)
+      
+      if (localData) {
+        const parsedData = JSON.parse(localData)
+        setData(parsedData)
+        return parsedData
       }
+      return null
+    } catch (err) {
+      console.error('Erro ao carregar dados locais:', err)
+      return null
     }
+  }, [toolType])
 
+  // Buscar dados do servidor
+  const fetchServerData = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/tools?toolType=${encodeURIComponent(toolType)}`)
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Erro ao buscar dados do servidor')
+      }
+      
+      const result = await response.json()
+      
+      if (result.data && result.data.length > 0) {
+        const serverData = result.data[0].data
+        setData(serverData)
+        localStorage.setItem(`tool_${toolType}`, JSON.stringify(serverData))
+        setIsLocal(false)
+        return serverData
+      }
+      return null
+    } catch (err) {
+      console.error('Erro ao buscar dados do servidor:', err)
+      throw err
+    }
+  }, [toolType])
+
+  // Carregar dados ao inicializar
+  useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
       setError(null)
       
       try {
         // Primeiro, carregar dados locais
-        loadLocalData()
+        const localData = loadLocalData()
         
         // Depois, tentar buscar do servidor
-        const response = await fetch(`/api/tools?toolType=${toolType}`)
-        
-        if (!response.ok) {
-          throw new Error('Erro ao buscar dados do servidor')
-        }
-        
-        const result = await response.json()
-        
-        if (result.data && result.data.length > 0) {
-          // Se tiver dados no servidor, usar eles e atualizar localStorage
-          const serverData = result.data[0].data
-          setData(serverData)
-          localStorage.setItem(`tool_${toolType}`, JSON.stringify(serverData))
-          setIsLocal(false)
-        }
-      } catch (err) {
-        console.error('Erro ao buscar dados:', err)
-        // Não definir erro para o usuário se temos dados locais
-        if (!data) {
-          setError('Não foi possível carregar seus dados. Usando modo offline.')
+        try {
+          await fetchServerData()
+        } catch (err) {
+          // Não definir erro para o usuário se temos dados locais
+          if (!localData) {
+            setError('Não foi possível carregar seus dados. Usando modo offline.')
+          }
         }
       } finally {
         setIsLoading(false)
@@ -62,16 +104,20 @@ export function useToolData({ toolType, initialData }: UseToolDataProps) {
     }
 
     fetchData()
-  }, [toolType])
+  }, [toolType, loadLocalData, fetchServerData])
 
   // Função para salvar dados
-  const saveData = async (newData: any) => {
+  const saveData = useCallback(async (newData: ToolData) => {
     setIsSaving(true)
     setError(null)
     
     try {
+      // Validar dados antes de salvar
+      ToolDataSchema.parse(newData)
+      
       // Sempre salvar localmente primeiro
-      localStorage.setItem(`tool_${toolType}`, JSON.stringify(newData))
+      const localStorageKey = `tool_${toolType}`
+      localStorage.setItem(localStorageKey, JSON.stringify(newData))
       setData(newData)
       
       // Tentar salvar no servidor
@@ -87,7 +133,8 @@ export function useToolData({ toolType, initialData }: UseToolDataProps) {
       })
       
       if (!response.ok) {
-        throw new Error('Erro ao salvar dados no servidor')
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Erro ao salvar dados no servidor')
       }
       
       const result = await response.json()
@@ -101,11 +148,16 @@ export function useToolData({ toolType, initialData }: UseToolDataProps) {
     } finally {
       setIsSaving(false)
     }
-  }
+  }, [toolType])
+
+  // Função para atualizar dados
+  const updateData = useCallback((newData: ToolData) => {
+    setData(newData)
+  }, [])
 
   return {
     data,
-    setData,
+    setData: updateData,
     saveData,
     isLoading,
     isSaving,
