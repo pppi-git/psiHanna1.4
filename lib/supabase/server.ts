@@ -11,7 +11,7 @@ export async function createClient() {
   console.log('[SERVER] Iniciando criação do cliente Supabase')
   
   try {
-    const cookieStore = await cookies()
+    const cookieStore = cookies()
     console.log('[SERVER] Cookie store obtido com sucesso')
     
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -24,7 +24,7 @@ export async function createClient() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       {
         cookies: {
-          getAll() {
+          async getAll() {
             console.log('[SERVER] Obtendo todos os cookies')
             try {
               const allCookies = cookieStore.getAll()
