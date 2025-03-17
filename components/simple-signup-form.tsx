@@ -2,18 +2,20 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
 import { toast } from "sonner"
-import { submitProgramSignup } from "@/app/actions"
+import { submitProgramSignup, getProgramSignupSchema } from "@/app/actions"
+import type { ProgramSignupValues } from "@/app/actions"
+import { z } from "zod"
 
 export function SimpleSignupForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProgramSignupValues>({
     firstName: "",
     lastName: "",
     email: "",
@@ -22,6 +24,25 @@ export function SimpleSignupForm() {
     message: "",
   })
   const [success, setSuccess] = useState(false)
+  const [schema, setSchema] = useState<z.ZodObject<any> | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Carregar o schema do servidor
+  useEffect(() => {
+    const loadSchema = async () => {
+      try {
+        const programSchema = await getProgramSignupSchema()
+        setSchema(programSchema)
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Erro ao carregar schema:", error)
+        toast.error("Erro ao carregar formulário. Por favor, recarregue a página.")
+        setIsLoading(false)
+      }
+    }
+
+    loadSchema()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -33,6 +54,22 @@ export function SimpleSignupForm() {
     setIsSubmitting(true)
 
     try {
+      // Validar dados com o schema
+      if (schema) {
+        try {
+          schema.parse(formData)
+        } catch (validationError) {
+          if (validationError instanceof z.ZodError) {
+            const errorMessages = validationError.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+            toast.error(`Erro de validação: ${errorMessages}`, {
+              duration: 5000,
+            })
+            setIsSubmitting(false)
+            return
+          }
+        }
+      }
+
       // Enviar dados para o servidor usando a função de ação do servidor
       const result = await submitProgramSignup(formData)
 
@@ -54,6 +91,16 @@ export function SimpleSignupForm() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <Card className="p-6 border shadow-sm">
+        <div className="flex justify-center items-center min-h-[200px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </Card>
+    )
   }
 
   if (success) {

@@ -4,7 +4,7 @@ import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 
 // Schema para validação do formulário de contato
-export const contactFormSchema = z.object({
+const contactFormSchema = z.object({
   name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres" }),
   email: z.string().email({ message: "Email inválido" }),
   phone: z.string().optional(),
@@ -18,7 +18,7 @@ export const contactFormSchema = z.object({
 export type ContactFormValues = z.infer<typeof contactFormSchema>
 
 // Schema para validação do formulário de inscrição no programa
-export const programSignupSchema = z.object({
+const programSignupSchema = z.object({
   firstName: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres" }),
   lastName: z.string().min(2, { message: "O sobrenome deve ter pelo menos 2 caracteres" }),
   email: z.string().email({ message: "Email inválido" }),
@@ -34,6 +34,20 @@ interface ActionResponse {
   success: boolean
   message: string
   error?: string
+}
+
+/**
+ * Retorna o schema de validação do formulário de contato
+ */
+export async function getContactFormSchema() {
+  return contactFormSchema;
+}
+
+/**
+ * Retorna o schema de validação do formulário de inscrição no programa
+ */
+export async function getProgramSignupSchema() {
+  return programSignupSchema;
 }
 
 /**

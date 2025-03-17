@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -11,30 +11,34 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { toast } from "sonner"
 import { ArrowRight, Loader2 } from "lucide-react"
-import { submitContactForm } from "@/app/actions"
-
-// Esquema de validação
-const formSchema = z.object({
-  name: z.string().min(2, { message: "O nome deve ter pelo menos 2 caracteres" }),
-  email: z.string().email({ message: "Email inválido" }),
-  phone: z.string().min(9, { message: "Número de telefone inválido" }).optional(),
-  subject: z.enum(["consulta", "programa", "duvida", "outro"], {
-    required_error: "Por favor selecione um assunto",
-  }),
-  message: z.string().min(10, { message: "A mensagem deve ter pelo menos 10 caracteres" }),
-  preferredContact: z.enum(["email", "phone", "whatsapp"], {
-    required_error: "Por favor, selecione uma forma de contacto",
-  }),
-})
-
-type FormValues = z.infer<typeof formSchema>
+import { submitContactForm, getContactFormSchema } from "@/app/actions"
+import type { ContactFormValues } from "@/app/actions"
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formSchema, setFormSchema] = useState<z.ZodObject<any> | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Carregar o schema do servidor
+  useEffect(() => {
+    const loadSchema = async () => {
+      try {
+        const schema = await getContactFormSchema()
+        setFormSchema(schema)
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Erro ao carregar schema:", error)
+        toast.error("Erro ao carregar formulário. Por favor, recarregue a página.")
+        setIsLoading(false)
+      }
+    }
+
+    loadSchema()
+  }, [])
 
   // Inicializar o formulário
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<ContactFormValues>({
+    resolver: formSchema ? zodResolver(formSchema) : undefined,
     defaultValues: {
       name: "",
       email: "",
@@ -45,10 +49,8 @@ export function ContactForm() {
     },
   })
 
-  const { watch } = form
-
   // Função para lidar com o envio do formulário
-  async function onSubmit(data: FormValues) {
+  async function onSubmit(data: ContactFormValues) {
     setIsSubmitting(true)
     console.log("Enviando dados do formulário:", data)
 
@@ -102,6 +104,17 @@ export function ContactForm() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6 flex justify-center items-center min-h-[400px]">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Carregando formulário...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -257,12 +270,7 @@ export function ContactForm() {
                 </FormItem>
               )}
             />
-            
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
