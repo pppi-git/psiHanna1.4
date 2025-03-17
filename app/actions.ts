@@ -15,6 +15,7 @@ const contactFormSchema = z.object({
   }),
 })
 
+// Tipo para os valores do formulário de contato - exportado como tipo, não como valor
 export type ContactFormValues = z.infer<typeof contactFormSchema>
 
 // Schema para validação do formulário de inscrição no programa
@@ -27,9 +28,10 @@ const programSignupSchema = z.object({
   message: z.string().optional(),
 })
 
+// Tipo para os valores do formulário de inscrição no programa - exportado como tipo, não como valor
 export type ProgramSignupValues = z.infer<typeof programSignupSchema>
 
-// Interface para respostas das ações do servidor
+// Interface para respostas das ações do servidor - não exportada
 interface ActionResponse {
   success: boolean
   message: string
