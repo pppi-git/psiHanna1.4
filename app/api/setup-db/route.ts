@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server-alt'
 import fs from 'fs'
 import path from 'path'
 
@@ -8,7 +8,7 @@ export async function GET() {
     const supabase = await createClient()
     
     // Ler o script SQL do arquivo
-    const sqlFilePath = path.join(process.cwd(), 'supabase', 'setup_direct.sql')
+    const sqlFilePath = path.join(process.cwd(), 'supabase', 'setup_simple.sql')
     const sqlScript = fs.readFileSync(sqlFilePath, 'utf8')
     
     // Executar o script SQL diretamente
