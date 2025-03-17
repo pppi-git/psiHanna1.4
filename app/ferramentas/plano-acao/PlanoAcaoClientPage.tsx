@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Info, Target, Plus, ArrowRight, CheckCircle, HelpCircle, Download, Sparkles } from "lucide-react"
+import { jsPDF } from "jspdf"
+import html2canvas from "html2canvas"
 
 // Tipo para o plano de ação
 interface ActionStep {
@@ -34,6 +36,8 @@ export function PlanoAcaoClientPage() {
   const [step, setStep] = useState(1)
   const [showTip, setShowTip] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  const planRef = useRef<HTMLDivElement>(null)
 
   // Estado para o formulário
   const [formData, setFormData] = useState<ActionPlan>({
@@ -119,10 +123,65 @@ export function PlanoAcaoClientPage() {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  // Função para baixar o plano (simulada)
-  const handleDownloadPDF = () => {
-    alert("Em uma implementação real, esta função geraria um PDF do seu plano de ação para você salvar localmente.")
-  }
+  // Função para baixar o plano como PDF
+  const handleDownloadPDF = async () => {
+    if (!planRef.current) return;
+    
+    try {
+      setIsGeneratingPDF(true);
+      
+      // Capturar o conteúdo do plano como imagem
+      const canvas = await html2canvas(planRef.current, {
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      
+      // Criar um novo documento PDF
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+      
+      // Adicionar logo e informações de contato
+      pdf.setFontSize(22);
+      pdf.setTextColor(41, 128, 185); // Cor primária
+      pdf.text('Hanara Psicologia', 20, 20);
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text('Plano de Ação Personalizado', 20, 30);
+      
+      // Adicionar data
+      const today = new Date();
+      const dateStr = today.toLocaleDateString('pt-BR');
+      pdf.text(`Criado em: ${dateStr}`, 20, 40);
+      
+      // Adicionar imagem do plano
+      const imgWidth = 170;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, imgHeight);
+      
+      // Adicionar rodapé com informações de contato
+      const pageHeight = pdf.internal.pageSize.height;
+      pdf.setFontSize(10);
+      pdf.text('Hanara Psicologia | www.hanarapsi.com', 20, pageHeight - 20);
+      pdf.text('Email: contato@hanarapsi.com | Tel: +351 123 456 789', 20, pageHeight - 15);
+      
+      // Salvar o PDF
+      pdf.save(`Plano_de_Acao_${dateStr.replace(/\//g, '-')}.pdf`);
+      
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      alert('Ocorreu um erro ao gerar o PDF. Por favor, tente novamente.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   // Função para obter dica contextual
   const getContextualTip = () => {
@@ -389,8 +448,8 @@ export function PlanoAcaoClientPage() {
                         onClick={handleNextStep}
                         className="bg-gradient-to-r from-primary to-accent"
                         disabled={
-                          (step === 1 && !formData.title) ||
-                          (step === 2 && !formData.steps.some((step) => step.description.trim() !== ""))
+                          (step === 1 && !formData.title.trim()) ||
+                          (step === 2 && formData.steps.filter(s => s.description.trim()).length === 0)
                         }
                       >
                         {step === 3 ? "Concluir" : "Próximo"}
@@ -414,7 +473,7 @@ export function PlanoAcaoClientPage() {
                         Parabéns por criar seu plano de ação. Revise abaixo o que você registrou.
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-6">
+                    <CardContent className="pt-6" ref={planRef}>
                       <div className="space-y-6">
                         <div>
                           <h3 className="text-sm font-medium mb-2">Objetivo:</h3>
@@ -460,8 +519,7 @@ export function PlanoAcaoClientPage() {
                           <div>
                             <h3 className="text-sm font-medium mb-2">Categoria:</h3>
                             <div
-                              className="inline-block px-2 py-1 rounded-full text-xs font-medium 
-                              ${getCategoryColor(formData.category)}"
+                              className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(formData.category)}`}
                             >
                               {formData.category}
                             </div>
@@ -480,9 +538,22 @@ export function PlanoAcaoClientPage() {
                       <Button variant="outline" onClick={handleRestart}>
                         Criar Novo Plano
                       </Button>
-                      <Button className="bg-gradient-to-r from-primary to-accent" onClick={handleDownloadPDF}>
-                        <Download className="h-4 w-4 mr-2" />
-                        Baixar como PDF
+                      <Button 
+                        className="bg-gradient-to-r from-primary to-accent" 
+                        onClick={handleDownloadPDF}
+                        disabled={isGeneratingPDF}
+                      >
+                        {isGeneratingPDF ? (
+                          <>
+                            <span className="animate-spin mr-2">⏳</span>
+                            Gerando PDF...
+                          </>
+                        ) : (
+                          <>
+                            <Download className="h-4 w-4 mr-2" />
+                            Baixar como PDF
+                          </>
+                        )}
                       </Button>
                     </CardFooter>
                   </Card>
