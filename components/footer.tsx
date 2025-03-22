@@ -86,7 +86,6 @@ export default function Footer() {
                 <br />
                 Lisboa - Portugal
               </li>
-              <li className="text-muted-foreground">+351 XXX XXX XXX</li>
               <li className="text-muted-foreground">contacto@hanara.com.br</li>
             </ul>
           </motion.div>
