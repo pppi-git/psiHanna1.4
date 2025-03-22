@@ -16,14 +16,37 @@ import {
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { useInView } from "react-intersection-observer"
-import { FeatureCard } from "@/components/calm-inspired/feature-card"
-import { TestimonialCarousel } from "@/components/calm-inspired/testimonial-carousel"
-import { ProgressJourney } from "@/components/calm-inspired/progress-journey"
-import { BenefitsGrid } from "@/components/calm-inspired/benefits-grid"
-import { InteractiveQuote } from "@/components/calm-inspired/interactive-quote"
+import dynamic from 'next/dynamic'
+import { Suspense } from "react"
 import { ChatButton } from "@/components/chat-button"
 import { useToast } from "@/hooks/use-toast"
 import type React from "react"
+
+// Lazy load components
+const FeatureCard = dynamic(() => import('@/components/calm-inspired/feature-card').then(mod => ({ default: mod.FeatureCard })), { 
+  ssr: true,
+  loading: () => <div className="h-64 w-full bg-gray-100 animate-pulse rounded-lg"></div>
+})
+
+const TestimonialCarousel = dynamic(() => import('@/components/calm-inspired/testimonial-carousel').then(mod => ({ default: mod.TestimonialCarousel })), {
+  ssr: true,
+  loading: () => <div className="h-80 w-full bg-gray-100 animate-pulse rounded-lg"></div>
+})
+
+const ProgressJourney = dynamic(() => import('@/components/calm-inspired/progress-journey').then(mod => ({ default: mod.ProgressJourney })), {
+  ssr: true,
+  loading: () => <div className="h-64 w-full bg-gray-100 animate-pulse rounded-lg"></div>
+})
+
+const BenefitsGrid = dynamic(() => import('@/components/calm-inspired/benefits-grid').then(mod => ({ default: mod.BenefitsGrid })), {
+  ssr: true,
+  loading: () => <div className="h-64 w-full bg-gray-100 animate-pulse rounded-lg"></div>
+})
+
+const InteractiveQuote = dynamic(() => import('@/components/calm-inspired/interactive-quote').then(mod => ({ default: mod.InteractiveQuote })), {
+  ssr: true,
+  loading: () => <div className="h-32 w-full bg-gray-100 animate-pulse rounded-lg"></div>
+})
 
 export default function Home() {
   const [heroRef, heroInView] = useInView({
@@ -217,7 +240,9 @@ export default function Home() {
             </p>
           </div>
 
-          <ProgressJourney steps={journeySteps} />
+          <Suspense fallback={<div className="h-64 w-full bg-gray-100 animate-pulse rounded-lg"></div>}>
+            <ProgressJourney steps={journeySteps} />
+          </Suspense>
         </div>
       </section>
 
@@ -241,12 +266,14 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <FeatureCard
-              icon={Brain}
-              title="Terapia Cognitivo-Comportamental"
-              description="Abordagem baseada em evidências para identificar e modificar padrões de pensamento negativos que influenciam comportamentos e emoções."
-              color="primary"
-            />
+            <Suspense fallback={<div className="h-64 w-full bg-gray-100 animate-pulse rounded-lg"></div>}>
+              <FeatureCard
+                icon={Brain}
+                title="Terapia Cognitivo-Comportamental"
+                description="Abordagem baseada em evidências para identificar e modificar padrões de pensamento negativos que influenciam comportamentos e emoções."
+                color="primary"
+              />
+            </Suspense>
             <FeatureCard
               icon={Heart}
               title="Mindfulness"
@@ -273,49 +300,43 @@ export default function Home() {
       </section>
 
       {/* Quote Section */}
-      <section className="w-full py-16 bg-gradient-to-b from-white to-primary/5">
+      <section className="w-full py-20 bg-primary/5">
         <div className="container px-4 md:px-6">
-          <div className="max-w-3xl mx-auto">
+          <Suspense fallback={<div className="h-32 w-full bg-gray-100 animate-pulse rounded-lg"></div>}>
             <InteractiveQuote />
-          </div>
+          </Suspense>
         </div>
       </section>
 
       {/* Benefits Section */}
-      <section className="w-full py-20 bg-white">
+      <section className="w-full py-20 bg-muted/30">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
-              <Shield className="h-4 w-4 mr-2" />
-              <span>Resultados Comprovados</span>
-            </div>
-            <h2 className="text-3xl font-bold tracking-tight mb-4">Benefícios para Sua Vida</h2>
+            <h2 className="text-3xl font-bold tracking-tight mb-4">Benefícios do Programa</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              O que você pode esperar ao participar do programa de 8 semanas ou das sessões de terapia individual.
+              O programa de 8 semanas oferece uma série de benefícios para seu bem-estar mental e emocional.
             </p>
           </div>
 
-          <BenefitsGrid benefits={benefits} />
+          <Suspense fallback={<div className="h-64 w-full bg-gray-100 animate-pulse rounded-lg"></div>}>
+            <BenefitsGrid benefits={benefits} />
+          </Suspense>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="w-full py-20 bg-gradient-to-b from-white to-primary/5">
+      <section className="w-full py-20 bg-white">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-2">
-              <Star className="h-4 w-4 mr-2" />
-              <span>Histórias de Transformação</span>
-            </div>
-            <h2 className="text-3xl font-bold tracking-tight mb-4">O que Dizem Sobre Mim</h2>
+            <h2 className="text-3xl font-bold tracking-tight mb-4">O Que Dizem Nossos Clientes</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Histórias de pessoas que transformaram suas vidas através da terapia.
+              Histórias reais de pessoas que transformaram sua relação com o stress e a ansiedade.
             </p>
           </div>
 
-          <div className="max-w-3xl mx-auto">
+          <Suspense fallback={<div className="h-80 w-full bg-gray-100 animate-pulse rounded-lg"></div>}>
             <TestimonialCarousel testimonials={testimonials} />
-          </div>
+          </Suspense>
         </div>
       </section>
 

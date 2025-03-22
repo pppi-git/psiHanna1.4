@@ -1,39 +1,85 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
+import './globals.css'
+import { Metadata, Viewport } from 'next'
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { ChatbotProvider } from "@/components/chatbot-provider"
+import { Providers } from './providers'
 
-const inter = Inter({ subsets: ["latin"] })
+export const metadataBase = new URL('https://hanarawebsite.vercel.app')
 
-export const metadata: Metadata = {
-  title: "Hanara Psicologia | Terapia Cognitivo-Comportamental e Mindfulness",
-  description:
-    "Serviços de psicologia com foco em Terapia Cognitivo-Comportamental, Mindfulness e programa de 8 semanas para controlo de stress e ansiedade.",
-  keywords: "psicologia, terapia cognitivo-comportamental, TCC, mindfulness, ansiedade, stress, Portugal",
-    generator: 'v0.dev'
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f172a' }
+  ],
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+export const metadata: Metadata = {
+  title: {
+    template: '%s | Hanara Psicologia',
+    default: 'Hanara Psicologia | Terapia Cognitivo-Comportamental', 
+  },
+  description: 'Serviços de psicologia focados em Terapia Cognitivo-Comportamental e práticas de mindfulness para promover bem-estar emocional e saúde mental.',
+  keywords: ['psicologia', 'terapia cognitivo-comportamental', 'mindfulness', 'saúde mental', 'bem-estar emocional', 'psicoterapia', 'ansiedade', 'depressão'],
+  authors: [{ name: 'Hanara Psicologia', url: 'https://hanarawebsite.vercel.app' }],
+  category: 'Saúde Mental',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'pt_BR',
+    title: 'Hanara Psicologia | Terapia Cognitivo-Comportamental',
+    description: 'Serviços de psicologia focados em Terapia Cognitivo-Comportamental e mindfulness para promover bem-estar emocional e saúde mental.',
+    siteName: 'Hanara Psicologia',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Hanara Psicologia - Terapia Cognitivo-Comportamental',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Hanara Psicologia | Terapia Cognitivo-Comportamental',
+    description: 'Serviços de psicologia focados em Terapia Cognitivo-Comportamental e mindfulness',
+    images: ['/twitter-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+}
+
+interface RootLayoutProps {
   children: React.ReactNode
-}>) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="pt-PT">
-      <body className={inter.className}>
-        <ChatbotProvider initialSystemMessage="Você é um assistente de apoio psicológico treinado pela Psicóloga Hanara Vecello com todas as técnicas de psicologia TCC mais eficazes cientificamente comprovadas. Você fornece orientações baseadas em Terapia Cognitivo-Comportamental, mindfulness e bem-estar mental. Você responde em português de Portugal. Você não fornece diagnósticos médicos, apenas informações educacionais. Você representa a Hanara Psicologia, um serviço de psicologia especializado em ajudar pessoas a superarem desafios emocionais.">
-          <Header />
-          {children}
-          <Footer />
-        </ChatbotProvider>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className="min-h-screen bg-background text-foreground antialiased">
+        <Providers>
+          <ChatbotProvider initialSystemMessage="Você é um assistente de apoio psicológico treinado pela Psicóloga Hanara com técnicas de Terapia Cognitivo-Comportamental cientificamente comprovadas. Forneça orientações baseadas em TCC, mindfulness e bem-estar mental. Responda em português do Brasil. Não forneça diagnósticos médicos, apenas informações educacionais.">
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </ChatbotProvider>
+        </Providers>
       </body>
     </html>
   )
 }
 
-
-
-import './globals.css'

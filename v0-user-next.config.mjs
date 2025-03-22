@@ -19,7 +19,16 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
+    webVitalsAttribution: ['CLS', 'LCP', 'FCP', 'FID', 'INP', 'TTFB'],
   },
+  // Otimização de fontes
+  optimizeFonts: true,
+  // Otimizar carregamento de scripts
+  poweredByHeader: false,
+  // Compressão de imagens
+  compress: true,
+  // Otimização de build
+  productionBrowserSourceMaps: false,
 };
 
 export default nextConfig;
