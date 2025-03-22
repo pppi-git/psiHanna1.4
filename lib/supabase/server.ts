@@ -7,8 +7,8 @@ import { cookies } from 'next/headers'
  * 
  * @returns Cliente Supabase configurado para o servidor
  */
-export async function createClient() {
-  console.log('[SERVER] Iniciando criação do cliente Supabase')
+export function createClient() {
+  const cookieStore = cookies()
   
   try {
     const cookieStore = cookies()

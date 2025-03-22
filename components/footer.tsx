@@ -82,14 +82,11 @@ export default function Footer() {
             <h3 className="text-lg font-medium">Contacto</h3>
             <ul className="space-y-2 text-sm">
               <li className="text-muted-foreground">
-                Rua Exemplo, 123
+                Florianópolis - Brasil
                 <br />
-                1000-000 Lisboa
-                <br />
-                Portugal
+                Lisboa - Portugal
               </li>
-              <li className="text-muted-foreground">+351 XXX XXX XXX</li>
-              <li className="text-muted-foreground">contacto@hanarapsicologa.pt</li>
+              <li className="text-muted-foreground">contacto@hanara.com.br</li>
             </ul>
           </motion.div>
           <motion.div variants={item} className="space-y-3">
@@ -108,7 +105,7 @@ export default function Footer() {
                 <span className="sr-only">LinkedIn</span>
               </Link>
               <Link
-                href="mailto:contacto@hanarapsicologa.pt"
+                href="mailto:contacto@hanara.com.br"
                 className="text-muted-foreground hover:text-primary transition-colors duration-200"
               >
                 <Mail className="h-5 w-5" />

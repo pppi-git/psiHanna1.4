@@ -1,7 +1,8 @@
 "use client"
 
-import { createContext, useContext, useState, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import { AzureChatbot } from "./azure-chatbot"
+import { useSearchParams } from "next/navigation"
 
 interface ChatbotContextType {
   openChatbot: () => void
@@ -25,6 +26,18 @@ interface ChatbotProviderProps {
 
 export function ChatbotProvider({ children, initialSystemMessage }: ChatbotProviderProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    // Verificar se há parâmetro na URL ou cookie para abrir o chatbot
+    const shouldOpenChat = searchParams.get("openChat") === "true" || document.cookie.includes("abrirChatbot=true")
+    
+    if (shouldOpenChat) {
+      setIsOpen(true)
+      // Limpar cookie após uso
+      document.cookie = "abrirChatbot=; max-age=0; path=/;"
+    }
+  }, [searchParams])
 
   const openChatbot = () => setIsOpen(true)
   const closeChatbot = () => setIsOpen(false)

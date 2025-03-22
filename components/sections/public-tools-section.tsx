@@ -1,5 +1,4 @@
 import { Brain, Heart, FileText, Target, Clock } from "lucide-react"
-import { GuidedBreathing } from "@/components/calm-inspired/guided-breathing"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -88,23 +87,20 @@ export function PublicToolsSection() {
       </Card>
 
       {/* Respiração Guiada */}
-      <Card className="overflow-hidden">
-        <CardHeader className="pb-2">
-          <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mb-2">
-            <Clock className="h-6 w-6 text-primary" />
+      <div className="bg-card rounded-lg border shadow-sm transition-all hover:shadow-md">
+        <div className="p-6">
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4 text-primary">
+            <Clock className="h-6 w-6" />
           </div>
-          <CardTitle>Respiração Guiada</CardTitle>
-          <CardDescription>Exercícios de respiração para reduzir ansiedade</CardDescription>
-        </CardHeader>
-        <CardContent className="pt-2">
-          <p className="text-sm text-muted-foreground mb-4">
-            A respiração consciente é uma das formas mais eficazes de acalmar o sistema nervoso e reduzir a ansiedade.
+          <h3 className="text-xl font-semibold mb-2">Respiração Consciente</h3>
+          <p className="text-muted-foreground mb-4">
+            Pratique técnicas de respiração guiada para reduzir o stress e a ansiedade. Inclui respiração 4-7-8 e respiração quadrada.
           </p>
-          <div className="flex justify-center mb-4">
-            <GuidedBreathing size="sm" />
-          </div>
-        </CardContent>
-      </Card>
+          <Link href="/ferramentas/respiracao-consciente">
+            <Button className="w-full">Aceder à Ferramenta</Button>
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

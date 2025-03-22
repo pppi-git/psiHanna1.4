@@ -263,12 +263,28 @@ export default function ProgramaClientPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {activeWeek <= 2 && (
+                  {activeWeek === 1 && (
                     <>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                         <span>Introdução aos conceitos básicos de T.C.C. e Mindfulness</span>
                       </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Avaliação inicial e definição de objetivos personalizados</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Primeiros exercícios de respiração consciente</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Entendendo a conexão entre pensamentos, emoções e comportamentos</span>
+                      </p>
+                    </>
+                  )}
+                  {activeWeek === 2 && (
+                    <>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                         <span>Identificação de padrões de pensamento automáticos</span>
@@ -279,11 +295,15 @@ export default function ProgramaClientPage() {
                       </p>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                        <span>Estabelecimento de intenções e objetivos pessoais</span>
+                        <span>Estabelecimento de intenções e metas realistas</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Introdução ao body scan e técnicas de relaxamento</span>
                       </p>
                     </>
                   )}
-                  {activeWeek > 2 && activeWeek <= 4 && (
+                  {activeWeek === 3 && (
                     <>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
@@ -295,15 +315,35 @@ export default function ProgramaClientPage() {
                       </p>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                        <span>Identificação de crenças centrais limitantes</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                        <span>Técnicas para expandir a consciência das emoções</span>
+                      </p>
+                    </>
+                  )}
+                  {activeWeek === 4 && (
+                    <>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                         <span>Estratégias para lidar com pensamentos difíceis</span>
                       </p>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                         <span>Desenvolvimento de autocompaixão</span>
                       </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                        <span>Práticas de meditação com foco na compaixão</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                        <span>Análise funcional de comportamentos automáticos</span>
+                      </p>
                     </>
                   )}
-                  {activeWeek > 4 && activeWeek <= 6 && (
+                  {activeWeek === 5 && (
                     <>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
@@ -315,20 +355,56 @@ export default function ProgramaClientPage() {
                       </p>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Meditação para cultivar equanimidade</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Técnicas de regulação emocional baseadas em mindfulness</span>
+                      </p>
+                    </>
+                  )}
+                  {activeWeek === 6 && (
+                    <>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                         <span>Comunicação consciente e relações interpessoais</span>
                       </p>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                         <span>Práticas para lidar com o stress no momento presente</span>
                       </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Escuta ativa e comunicação não-violenta</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Estabelecimento de limites saudáveis nos relacionamentos</span>
+                      </p>
                     </>
                   )}
-                  {activeWeek > 6 && (
+                  {activeWeek === 7 && (
                     <>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                         <span>Desenvolvimento de um plano de prática pessoal</span>
                       </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                        <span>Consolidação das práticas aprendidas</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                        <span>Adaptação de técnicas para desafios específicos</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                        <span>Meditação para cultivar gratidão e apreciação</span>
+                      </p>
+                    </>
+                  )}
+                  {activeWeek === 8 && (
+                    <>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                         <span>Estratégias para manutenção dos ganhos a longo prazo</span>
@@ -340,6 +416,10 @@ export default function ProgramaClientPage() {
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                         <span>Integração das práticas na vida cotidiana</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                        <span>Plano personalizado para continuidade da prática</span>
                       </p>
                     </>
                   )}

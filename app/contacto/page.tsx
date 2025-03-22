@@ -43,19 +43,17 @@ export default function ContactoPage() {
                     <Mail className="h-5 w-5 text-primary mt-0.5" />
                     <div>
                       <h3 className="font-medium">Email</h3>
-                      <p className="text-sm text-muted-foreground">contacto@hanarapsicologa.pt</p>
+                      <p className="text-sm text-muted-foreground">contacto@hanara.com.br</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
                     <MapPin className="h-5 w-5 text-primary mt-0.5" />
                     <div>
-                      <h3 className="font-medium">Endereço</h3>
+                      <h3 className="font-medium">Localização</h3>
                       <p className="text-sm text-muted-foreground">
-                        Rua Exemplo, 123
+                        Florianópolis - Brasil
                         <br />
-                        1000-000 Lisboa
-                        <br />
-                        Portugal
+                        Lisboa - Portugal
                       </p>
                     </div>
                   </div>
