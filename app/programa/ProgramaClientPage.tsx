@@ -263,12 +263,28 @@ export default function ProgramaClientPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {activeWeek <= 2 && (
+                  {activeWeek === 1 && (
                     <>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                         <span>Introdução aos conceitos básicos de T.C.C. e Mindfulness</span>
                       </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Avaliação inicial e definição de objetivos personalizados</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Primeiros exercícios de respiração consciente</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Entendendo a conexão entre pensamentos, emoções e comportamentos</span>
+                      </p>
+                    </>
+                  )}
+                  {activeWeek === 2 && (
+                    <>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                         <span>Identificação de padrões de pensamento automáticos</span>
@@ -279,7 +295,11 @@ export default function ProgramaClientPage() {
                       </p>
                       <p className="flex items-start gap-2">
                         <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                        <span>Estabelecimento de intenções e objetivos pessoais</span>
+                        <span>Estabelecimento de intenções e metas realistas</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                        <CheckCircle className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                        <span>Introdução ao body scan e técnicas de relaxamento</span>
                       </p>
                     </>
                   )}
