@@ -37,6 +37,7 @@ export default function Header() {
     { path: "/sobre", label: "Sobre" },
     { path: "/programa", label: "Programa" },
     { path: "/ferramentas", label: "Ferramentas" },
+    { path: "/assistente-ia", label: "Assistente IA" },
     { path: "/blog", label: "Blog" },
     { path: "/contacto", label: "Contacto" },
   ]

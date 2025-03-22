@@ -24,7 +24,13 @@ export function AzureChatbot({
   isOpen = false,
   onClose,
 }: ChatbotProps) {
-  const [messages, setMessages] = useState<Message[]>([{ role: "system", content: initialSystemMessage }])
+  const [messages, setMessages] = useState<Message[]>([
+    { role: "system", content: initialSystemMessage },
+    { 
+      role: "assistant", 
+      content: "Olá! Sou o assistente virtual da Hanara Psicologia. Estou aqui para conversar sobre saúde mental, ajudar com técnicas de TCC e mindfulness. Como posso ajudar você hoje? Não hesite em fazer perguntas!" 
+    }
+  ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(isOpen)
@@ -101,15 +107,25 @@ export function AzureChatbot({
     <>
       {/* Botão flutuante para abrir o chat */}
       {!isVisible && (
-        <motion.button
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-r from-primary to-accent shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-white"
-          onClick={toggleChat}
-          aria-label="Abrir chat"
-        >
-          <Bot className="h-6 w-6" />
-        </motion.button>
+        <motion.div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-lg shadow-lg p-3 mb-3 max-w-60"
+          >
+            <p className="text-sm font-medium">Precisa de ajuda? Converse comigo!</p>
+            <p className="text-xs text-muted-foreground">Assistente de apoio psicológico</p>
+          </motion.div>
+          <motion.button
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="w-14 h-14 rounded-full bg-gradient-to-r from-primary to-accent shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-white"
+            onClick={toggleChat}
+            aria-label="Abrir chat"
+          >
+            <Bot className="h-6 w-6" />
+          </motion.button>
+        </motion.div>
       )}
 
       {/* Janela de chat */}
