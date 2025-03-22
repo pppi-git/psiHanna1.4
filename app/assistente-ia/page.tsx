@@ -1,27 +1,22 @@
-"use client"
-
 import { Bot, Brain, MessageSquare, ThumbsUp, Zap, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { useChatbot } from "@/components/chatbot-provider"
 import Link from "next/link"
 
 export const metadata = {
-  title: "Assistente IA | Hanara Vecello Psicologia",
+  title: "Assistente Virtual Hanara | Hanara Vecello Psicologia",
   description: "Converse com o nosso assistente virtual de apoio psicológico treinado com técnicas de TCC cientificamente comprovadas."
 }
 
-export default function AssistenteIA() {
-  const { openChatbot } = useChatbot()
-
+export default function AssistenteVirtual() {
   return (
     <div className="container px-4 py-12 mx-auto max-w-6xl">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-          Assistente Virtual de Apoio Psicológico
+          Assistente Virtual Hanara
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          Converse com nosso assistente IA treinado pela Psicóloga Hanara Vecello com técnicas de TCC cientificamente comprovadas.
+          Converse com nosso assistente virtual treinado pela Psicóloga Hanara Vecello com técnicas de TCC cientificamente comprovadas.
         </p>
       </div>
 
@@ -65,10 +60,12 @@ export default function AssistenteIA() {
           </div>
           
           <div className="flex gap-4 pt-4">
-            <Button size="lg" className="gap-2" onClick={openChatbot}>
-              <MessageSquare className="h-4 w-4" />
-              <span>Conversar agora</span>
-            </Button>
+            <form action="/api/abrir-chatbot">
+              <Button size="lg" className="gap-2" type="submit">
+                <MessageSquare className="h-4 w-4" />
+                <span>Conversar agora</span>
+              </Button>
+            </form>
             
             <Button variant="outline" size="lg" asChild>
               <Link href="/ferramentas" className="gap-2">
@@ -122,10 +119,12 @@ export default function AssistenteIA() {
                 </div>
               </div>
               
-              <Button className="w-full gap-2" onClick={openChatbot}>
-                <MessageSquare className="h-4 w-4" />
-                <span>Iniciar conversa</span>
-              </Button>
+              <form action="/api/abrir-chatbot">
+                <Button className="w-full gap-2" type="submit">
+                  <MessageSquare className="h-4 w-4" />
+                  <span>Iniciar conversa</span>
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </div>
@@ -177,10 +176,12 @@ export default function AssistenteIA() {
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
           Converse agora mesmo com nosso assistente e dê o primeiro passo em direção ao seu bem-estar emocional.
         </p>
-        <Button size="lg" className="gap-2" onClick={openChatbot}>
-          <MessageSquare className="h-4 w-4" />
-          <span>Iniciar conversa com o assistente</span>
-        </Button>
+        <form action="/api/abrir-chatbot">
+          <Button size="lg" className="gap-2" type="submit">
+            <MessageSquare className="h-4 w-4" />
+            <span>Iniciar conversa com o assistente</span>
+          </Button>
+        </form>
       </div>
     </div>
   )
