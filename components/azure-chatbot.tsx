@@ -17,12 +17,14 @@ interface ChatbotProps {
   initialSystemMessage?: string
   isOpen?: boolean
   onClose?: () => void
+  isEmbedded?: boolean
 }
 
 export function AzureChatbot({
   initialSystemMessage = "Você é um assistente psicológico útil que fornece informações sobre terapia cognitivo-comportamental, mindfulness e bem-estar mental. Você não fornece diagnósticos médicos, apenas informações educacionais.",
   isOpen = false,
   onClose,
+  isEmbedded = false,
 }: ChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([
     { role: "system", content: initialSystemMessage },
@@ -103,6 +105,112 @@ export function AzureChatbot({
     }
   }
 
+  // Se o chat estiver embutido na página, renderize apenas a parte interna
+  if (isEmbedded) {
+    return (
+      <div className="flex flex-col h-full">
+        {/* Área de mensagens */}
+        <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+          <AnimatePresence initial={false}>
+            {messages
+              .filter((msg) => msg.role !== "system")
+              .map((message, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`mb-4 flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-lg p-3 ${
+                      message.role === "user"
+                        ? "bg-primary text-white rounded-tr-none"
+                        : "bg-white border border-gray-200 rounded-tl-none"
+                    }`}
+                  >
+                    <div className="flex items-center mb-1">
+                      {message.role === "assistant" ? (
+                        <Bot className="h-4 w-4 mr-1 text-primary" />
+                      ) : (
+                        <User className="h-4 w-4 mr-1 text-white" />
+                      )}
+                      <span className="text-xs font-medium">{message.role === "user" ? "Você" : "Assistente"}</span>
+                    </div>
+                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  </div>
+                </motion.div>
+              ))}
+          </AnimatePresence>
+
+          {isLoading && (
+            <div className="flex justify-start mb-4">
+              <div className="bg-white border border-gray-200 rounded-lg rounded-tl-none p-3 max-w-[80%]">
+                <div className="flex items-center">
+                  <Bot className="h-4 w-4 mr-1 text-primary" />
+                  <span className="text-xs font-medium">Assistente</span>
+                </div>
+                <div className="flex items-center mt-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-primary mr-2" />
+                  <span className="text-sm text-gray-500">Digitando...</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="flex justify-center mb-4">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 max-w-[90%] text-center">
+                <p className="text-sm text-red-600">{error}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 text-xs border-red-300 text-red-600 hover:bg-red-50"
+                  onClick={() => setError(null)}
+                >
+                  Tentar novamente
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Formulário de entrada */}
+        <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200 bg-white">
+          <div className="flex items-end gap-2">
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Digite sua mensagem..."
+              className="resize-none min-h-[60px] max-h-[120px] flex-1"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSubmit(e)
+                }
+              }}
+              disabled={isLoading}
+            />
+            <Button
+              type="submit"
+              size="icon"
+              className="bg-primary hover:bg-primary/90 h-10 w-10"
+              disabled={isLoading || !input.trim()}
+            >
+              <Send className="h-4 w-4" />
+              <span className="sr-only">Enviar</span>
+            </Button>
+          </div>
+          <p className="text-xs text-gray-400 mt-2 text-center">
+            Este assistente fornece apenas informações educacionais, não substitui aconselhamento profissional.
+          </p>
+        </form>
+      </div>
+    )
+  }
+
   return (
     <>
       {/* Botão flutuante para abrir o chat */}
@@ -130,7 +238,7 @@ export function AzureChatbot({
 
       {/* Janela de chat */}
       <AnimatePresence>
-        {isVisible && (
+        {isVisible && !isEmbedded && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

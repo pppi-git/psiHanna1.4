@@ -1,14 +1,36 @@
-import { Bot, Brain, MessageSquare, ThumbsUp, Zap, Check } from "lucide-react"
+"use client"
+
+import { Bot, Brain, MessageSquare, ThumbsUp, Zap, Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
-
-export const metadata = {
-  title: "Assistente Virtual Hanara | Hanara Vecello Psicologia",
-  description: "Converse com o nosso assistente virtual de apoio psicológico treinado com técnicas de TCC cientificamente comprovadas."
-}
+import { useChatbot } from "@/components/chatbot-provider"
+import { useState, useEffect } from "react"
+import { AzureChatbot } from "@/components/azure-chatbot"
 
 export default function AssistenteVirtual() {
+  const { openChatbot } = useChatbot()
+  const [showChat, setShowChat] = useState(false)
+  const [systemMessage, setSystemMessage] = useState(
+    "Você é um assistente de apoio psicológico treinado pela Psicóloga Hanara Christensen com todas as técnicas de psicologia TCC mais eficazes cientificamente comprovadas. Você fornece orientações baseadas em Terapia Cognitivo-Comportamental, mindfulness e bem-estar mental. Você responde em português de Portugal. Você não fornece diagnósticos médicos, apenas informações educacionais. Você representa a Hanara Psicologia, um serviço de psicologia especializado em ajudar pessoas a superarem desafios emocionais."
+  )
+
+  // Abre o chat automaticamente se vier com parâmetro na URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("chat") === "open") {
+      setShowChat(true);
+    }
+  }, []);
+
+  const handleOpenChat = () => {
+    setShowChat(true)
+  }
+
+  const handleCloseChat = () => {
+    setShowChat(false)
+  }
+
   return (
     <div className="container px-4 py-12 mx-auto max-w-6xl">
       <div className="text-center mb-12">
@@ -16,7 +38,7 @@ export default function AssistenteVirtual() {
           Assistente Virtual Hanara
         </h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          Converse com nosso assistente virtual treinado pela Psicóloga Hanara Vecello com técnicas de TCC cientificamente comprovadas.
+          Converse com nosso assistente virtual treinado pela Psicóloga Hanara Christensen com técnicas de TCC cientificamente comprovadas.
         </p>
       </div>
 
@@ -60,12 +82,10 @@ export default function AssistenteVirtual() {
           </div>
           
           <div className="flex gap-4 pt-4">
-            <form action="/api/abrir-chatbot">
-              <Button size="lg" className="gap-2" type="submit">
-                <MessageSquare className="h-4 w-4" />
-                <span>Conversar agora</span>
-              </Button>
-            </form>
+            <Button size="lg" className="gap-2" onClick={handleOpenChat}>
+              <MessageSquare className="h-4 w-4" />
+              <span>Conversar agora</span>
+            </Button>
             
             <Button variant="outline" size="lg" asChild>
               <Link href="/ferramentas" className="gap-2">
@@ -119,12 +139,10 @@ export default function AssistenteVirtual() {
                 </div>
               </div>
               
-              <form action="/api/abrir-chatbot">
-                <Button className="w-full gap-2" type="submit">
-                  <MessageSquare className="h-4 w-4" />
-                  <span>Iniciar conversa</span>
-                </Button>
-              </form>
+              <Button className="w-full gap-2" onClick={handleOpenChat}>
+                <MessageSquare className="h-4 w-4" />
+                <span>Iniciar conversa</span>
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -176,13 +194,40 @@ export default function AssistenteVirtual() {
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
           Converse agora mesmo com nosso assistente e dê o primeiro passo em direção ao seu bem-estar emocional.
         </p>
-        <form action="/api/abrir-chatbot">
-          <Button size="lg" className="gap-2" type="submit">
-            <MessageSquare className="h-4 w-4" />
-            <span>Iniciar conversa com o assistente</span>
-          </Button>
-        </form>
+        <Button size="lg" className="gap-2" onClick={handleOpenChat}>
+          <MessageSquare className="h-4 w-4" />
+          <span>Iniciar conversa com o assistente</span>
+        </Button>
       </div>
+
+      {/* Chatbot embutido na página */}
+      {showChat && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl h-[600px] flex flex-col overflow-hidden">
+            <div className="bg-gradient-to-r from-primary to-accent p-4 text-white flex justify-between items-center">
+              <div className="flex items-center">
+                <Bot className="h-5 w-5 mr-2" />
+                <h3 className="font-medium">Assistente Virtual Hanara</h3>
+              </div>
+              <button
+                onClick={handleCloseChat}
+                className="text-white/80 hover:text-white transition-colors"
+                aria-label="Fechar chat"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex-1">
+              <AzureChatbot 
+                initialSystemMessage={systemMessage} 
+                isOpen={true} 
+                onClose={handleCloseChat}
+                isEmbedded={true}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 } 

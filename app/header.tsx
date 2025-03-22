@@ -41,6 +41,7 @@ export default function Header() {
     { path: "/sobre", label: "Sobre" },
     { path: "/programa", label: "Programa" },
     { path: "/ferramentas", label: "Ferramentas" },
+    { path: "/assistente-ia", label: "Assistente Virtual" },
     { path: "/blog", label: "Blog" },
     { path: "/contacto", label: "Contacto" },
   ]
@@ -141,37 +142,4 @@ export default function Header() {
                 href={item.path}
                 className={`text-sm font-medium transition-colors hover:text-primary ${
                   activePath === item.path ? "text-primary" : ""
-                }`}
-                onClick={() => {
-                  setActivePath(item.path)
-                  setIsMenuOpen(false)
-                }}
-              >
-                {item.label}
-              </Link>
-            ))}
-
-            <Button
-              variant="secondary"
-              className="w-full bg-primary/10 text-primary hover:bg-primary/20 mb-2"
-              onClick={(e) => {
-                handlePatientAreaClick(e)
-                setIsMenuOpen(false)
-              }}
-            >
-              <User className="h-4 w-4 mr-2" />
-              Área do Paciente
-            </Button>
-
-            <Link href="/contacto" onClick={() => setIsMenuOpen(false)}>
-              <Button className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all duration-300 rounded-full">
-                Agendar Consulta
-              </Button>
-            </Link>
-          </nav>
-        </motion.div>
-      )}
-    </header>
-  )
-}
-
+                }`
