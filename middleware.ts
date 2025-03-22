@@ -40,43 +40,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     }
   )
 
-  // IMPORTANTE: Não execute código entre createServerClient e
-  // supabase.auth.getUser(). Um simples erro pode tornar muito difícil depurar
-  // problemas com usuários sendo desconectados aleatoriamente.
-
-  // Obter informações do usuário atual
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  // Registrar erros de autenticação, mas não interromper o fluxo
-  if (authError) {
-    console.error('Erro de autenticação no middleware:', authError)
-  }
-
-  // Neste projeto, não vamos redirecionar para login, pois é um site público
-  // com algumas áreas protegidas. Se você quiser adicionar autenticação mais tarde,
-  // você pode descomentar o código abaixo.
-
-  /*
-  // Verificar se o usuário está autenticado para rotas protegidas
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth') &&
-    !isPublicRoute(request.nextUrl.pathname)
-  ) {
-    // Redirecionar para a página de login
-    const redirectUrl = new URL('/login', request.url)
-    
-    // Adicionar URL de retorno como parâmetro de consulta
-    redirectUrl.searchParams.set('returnUrl', request.nextUrl.pathname)
-    
-    return NextResponse.redirect(redirectUrl)
-  }
-  */
-
   // IMPORTANTE: Você *deve* retornar o objeto supabaseResponse como está.
   return supabaseResponse
 }
